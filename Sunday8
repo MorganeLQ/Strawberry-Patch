@@ -1,0 +1,52 @@
+import pygame
+
+#general setup
+pygame.init()
+
+pygame.display.set_caption('Strawberry Patch')
+display = pygame.display.set_mode((800, 700))
+
+#clock
+clock = pygame.time.Clock()
+
+#import background image
+bg = pygame.image.load('Images/Background.jpeg').convert_alpha()
+#import ground image
+ground = pygame.image.load('Images/ground.png').convert_alpha()
+#import player image
+player = pygame.image.load('Images/Player.png').convert_alpha()
+
+#size of player
+player = pygame.transform.scale(player, (50, 60))
+#create a rectangle around the player
+player_rect = player.get_rect(center = (400, 350))
+   
+
+while True:
+#event loop
+   for event in pygame.event.get():
+      #closing the game
+      if event.type == pygame.QUIT:
+         pygame.quit()
+         exit()
+      #Display
+      #update surface color
+      display.fill('pink')
+      #draw the background
+      display.blit(bg, (0,0))
+      
+      #ground platform positions
+      display.blit(ground, (30, 600))
+      display.blit(ground, (290, 520))
+      display.blit(ground, (550, 600)) #moving platform up down
+      display.blit(ground, (30, 200)) #moving platform left right
+      display.blit(ground, (290, 300))
+      display.blit(ground, (550, 100)) #door platform
+      
+      #move player to the right
+      player_rect.left += 1
+      #position of player
+      display.blit(player, (player_rect))
+       
+      pygame.display.update()
+      clock.tick(120)
