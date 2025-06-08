@@ -9,18 +9,38 @@ display = pygame.display.set_mode((800, 700))
 #clock
 clock = pygame.time.Clock()
 
-#import background image
+#score
+font = pygame.font.Font('font/Pixelfont.ttf', 50)
+score = font.render('Score: ', False, 'black')
+score_rect = score.get_rect(bottomright = (400, 50))
+
+#import images
 bg = pygame.image.load('Images/Background.jpeg').convert_alpha()
-#import ground image
 ground = pygame.image.load('Images/ground.png').convert_alpha()
-#import player image
 player = pygame.image.load('Images/Player.png').convert_alpha()
+strawberry = pygame.image.load('Images/Strawberry.png').convert_alpha()
+
+#size of strawberry
+strawberry = pygame.transform.scale(strawberry, (35, 35))
+#create a rectangle around the strawberries
+strawberry_rect = strawberry.get_rect(topleft = (345, 480))
+strawberry_rect = strawberry.get_rect(topleft = (400, 480))
+strawberry_rect = strawberry.get_rect(topleft = (635, 560))
+strawberry_rect = strawberry.get_rect(topleft = (635, 440))
+strawberry_rect = strawberry.get_rect(topleft = (635, 320))
+strawberry_rect = strawberry.get_rect(topleft = (110, 160))
+strawberry_rect = strawberry.get_rect(topleft = (110, 50))
+strawberry_rect = strawberry.get_rect(topleft = (240, 160))
+strawberry_rect = strawberry.get_rect(topleft = (370, 160))
+strawberry_rect = strawberry.get_rect(topleft = (600, 60))
 
 #size of player
 player = pygame.transform.scale(player, (50, 60))
 #create a rectangle around the player
-player_rect = player.get_rect(center = (400, 350))
-   
+player_rect = player.get_rect(midbottom = (400, 350))
+
+
+player_gravity = 0
 
 while True:
 #event loop
@@ -29,6 +49,12 @@ while True:
       if event.type == pygame.QUIT:
          pygame.quit()
          exit()
+      #keyboard input
+      #if event.type == pygame.KEYDOWN:
+         #player can only jump if on ground
+         if event.key == pygame.K_SPACE and player_rect.bottom >= ground.top: 
+            player_gravity = -20
+      
       #Display
       #update surface color
       display.fill('pink')
@@ -36,17 +62,40 @@ while True:
       display.blit(bg, (0,0))
       
       #ground platform positions
-      display.blit(ground, (30, 600))
-      display.blit(ground, (290, 520))
-      display.blit(ground, (550, 600)) #moving platform up down
-      display.blit(ground, (30, 200)) #moving platform left right
-      display.blit(ground, (290, 300))
-      display.blit(ground, (550, 100)) #door platform
+      display.blit(ground, (30, 600)) #starting platform (1)
+      display.blit(ground, (290, 520)) # 2
+      display.blit(ground, (550, 600)) #moving platform up down (3)
+      display.blit(ground, (30, 200)) #moving platform left right (4)
+      display.blit(ground, (290, 300)) # 5
+      display.blit(ground, (550, 100)) #door platform (6)
+
+      #strawberry positions
+      display.blit(strawberry, (345, 480)) # 2
+      display.blit(strawberry, (400, 480)) # 2
+      display.blit(strawberry, (635, 560)) # 3
+      display.blit(strawberry, (635, 440)) # 3
+      display.blit(strawberry, (635, 320)) # 3
+      display.blit(strawberry, (110, 160)) #4
+      display.blit(strawberry, (110, 50)) #4
+      display.blit(strawberry, (240, 160)) #4
+      display.blit(strawberry, (370, 160)) #4
+      display.blit(strawberry, (600, 60)) #6
       
-      #move player to the right
-      player_rect.left += 1
+      #increase gravity
+      player_gravity += 1
+      player_rect.y += player_gravity
       #position of player
+      pygame.draw.rect(display, 'pink', score_rect)
       display.blit(player, (player_rect))
-       
+      display.blit(strawberry, (strawberry_rect))
+
+      #player keyboard input
+      keys = pygame.key.get_pressed()
+      if keys[pygame.K_SPACE]:
+         player_gravity = -20
+
+      #if player_rect.colliderect(strawberry_rect):
+         
+      
       pygame.display.update()
       clock.tick(120)
