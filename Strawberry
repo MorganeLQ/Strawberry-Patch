@@ -16,7 +16,7 @@ player = pygame.image.load('Images/Player.png').convert_alpha()
 strawberry = pygame.image.load('Images/Strawberry.png').convert_alpha()
 
 #size of strawberry
-strawberry = pygame.transform.scale(strawberry, (40, 40))
+strawberry = pygame.transform.scale(strawberry, (35, 35))
 
 #size of player
 player = pygame.transform.scale(player, (50, 60))
@@ -33,7 +33,7 @@ while True:
          pygame.quit()
          exit()
       #keyboard input
-      if event.type == pygame.KEYDOWN:
+      #if event.type == pygame.KEYDOWN:
          #player can only jump if on ground
          if event.key == pygame.K_SPACE and player_rect.bottom >= ground.top: 
             player_gravity = -20
@@ -45,15 +45,24 @@ while True:
       display.blit(bg, (0,0))
       
       #ground platform positions
-      display.blit(ground, (30, 600))
-      display.blit(ground, (290, 520))
-      display.blit(ground, (550, 600)) #moving platform up down
-      display.blit(ground, (30, 200)) #moving platform left right
-      display.blit(ground, (290, 300))
-      display.blit(ground, (550, 100)) #door platform
+      display.blit(ground, (30, 600)) #starting platform (1)
+      display.blit(ground, (290, 520)) # 2
+      display.blit(ground, (550, 600)) #moving platform up down (3)
+      display.blit(ground, (30, 200)) #moving platform left right (4)
+      display.blit(ground, (290, 300)) # 5
+      display.blit(ground, (550, 100)) #door platform (6)
 
       #strawberry positions
-      display.blit(strawberry, (290, 480))
+      display.blit(strawberry, (345, 480)) # 2
+      display.blit(strawberry, (400, 480)) # 2
+      display.blit(strawberry, (635, 560)) # 3
+      display.blit(strawberry, (635, 440)) # 3
+      display.blit(strawberry, (635, 320)) # 3
+      display.blit(strawberry, (110, 160)) #4
+      display.blit(strawberry, (110, 50)) #4
+      display.blit(strawberry, (240, 160)) #4
+      display.blit(strawberry, (370, 160)) #4
+      display.blit(strawberry, (600, 60)) #6
       
       #increase gravity
       player_gravity += 1
