@@ -59,19 +59,13 @@ ground_rects = [
 
 #size of strawberry
 strawberry = pygame.transform.scale(strawberry, (35, 35))
-#create a rectangle around the strawberries
-strawberry_rects = [
-    strawberry.get_rect(topleft=(345, 480)),
-    strawberry.get_rect(topleft=(400, 480)),
-    strawberry.get_rect(topleft=(635, 560)),
-    strawberry.get_rect(topleft=(635, 440)),
-    strawberry.get_rect(topleft=(635, 320)),
-    strawberry.get_rect(topleft=(110, 160)),
-    strawberry.get_rect(topleft=(110, 50)),
-    strawberry.get_rect(topleft=(240, 160)),
-    strawberry.get_rect(topleft=(370, 160)),
-    strawberry.get_rect(topleft=(600, 60))
+#strawberries positions
+strawberry_positions = [
+    (345, 480), (400, 480), (635, 560), (635, 440), (635, 320),
+    (110, 160), (110, 50), (240, 160), (370, 160), (600, 60)
 ]
+
+strawberry_rects = [strawberry.get_rect(topleft=pos) for pos in strawberry_positions]
 
 #size of player
 player = pygame.transform.scale(player, (50, 60))
@@ -120,18 +114,7 @@ while True:
             player_rect.midbottom = (50, 560)
             start_time = int(pygame.time.get_ticks() / 1000)
             strawberries_collected = 0
-            strawberry_rects = [
-                 strawberry.get_rect(topleft=(345, 480)),
-                 strawberry.get_rect(topleft=(400, 480)),
-                 strawberry.get_rect(topleft=(635, 560)),
-                 strawberry.get_rect(topleft=(635, 440)),
-                 strawberry.get_rect(topleft=(635, 320)),
-                 strawberry.get_rect(topleft=(110, 160)),
-                 strawberry.get_rect(topleft=(110, 50)),
-                 strawberry.get_rect(topleft=(240, 160)),
-                 strawberry.get_rect(topleft=(370, 160)),
-                 strawberry.get_rect(topleft=(600, 60))
-             ]
+            strawberry_rects = [strawberry.get_rect(topleft=pos) for pos in strawberry_positions]
             
       
       if game_active:
