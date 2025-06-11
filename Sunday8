@@ -155,13 +155,6 @@ while True:
             #player_rect.bottom = 560
             game_active = False
 
-         # Check if player is on the ground
-         for ground_rect in ground_rects:
-             if player_rect.colliderect(ground_rect) and player_gravity >= 0:
-                 player_rect.bottom = ground_rect.top
-                 player_gravity = 0
-                 on_ground = True
-                 break
          #display images
          display.blit(player, (player_rect))
 
