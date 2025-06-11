@@ -67,6 +67,13 @@ moving_platform_speed = 2
 moving_platform_min = 300  # Highest position
 moving_platform_max = 600  # Lowest position
 
+#moving platform #4 (index 3 in ground_rects (30, 200))
+moving_platform_x = 30
+moving_platform_direction_x = 1  # -1 = left, 1 = right
+moving_platform_speed_x = 2
+moving_platform_min_x = 30  # Leftmost position
+moving_platform_max_x = 300  # Rightmost position
+
 #size of strawberry
 strawberry = pygame.transform.scale(strawberry, (35, 35))
 #strawberries positions
@@ -123,17 +130,22 @@ while True:
 
          # Move platform up/down
          moving_platform_y += moving_platform_direction * moving_platform_speed
+         # Move platform left/right
+         moving_platform_x += moving_platform_direction_x * moving_platform_speed_x
          # Reverse direction at bounds
          if moving_platform_y <= moving_platform_min or moving_platform_y >= moving_platform_max:
              moving_platform_direction *= -1
+         if moving_platform_x <= moving_platform_min_x or moving_platform_x >= moving_platform_max_x:
+             moving_platform_direction_x *= -1
          # Update the rect
          ground_rects[2].y = moving_platform_y
+         ground_rects[3].x = moving_platform_x
          
          #ground platform positions
          display.blit(ground, (30, 600))  #starting platform (1)
          display.blit(ground, (290, 520))  # 2
          display.blit(ground, ground_rects[2])  #moving platform up down (3)
-         display.blit(ground, (30, 200))  #moving platform left right (4)
+         display.blit(ground, ground_rects[3])  #moving platform left right (4)
          display.blit(ground, (290, 300))  # 5
          display.blit(ground, (550, 100))  #door platform (6)
    
