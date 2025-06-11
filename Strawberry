@@ -49,6 +49,7 @@ bg = pygame.image.load('Images/Background.jpeg').convert_alpha()
 ground = pygame.image.load('Images/ground.png').convert_alpha()
 player = pygame.image.load('Images/Player.png').convert_alpha()
 strawberry = pygame.image.load('Images/Strawberry.png').convert_alpha()
+door = pygame.image.load('Images/door.png').convert_alpha()
 
 #create a rectangle around the ground
 ground_rects = [
@@ -83,6 +84,9 @@ strawberry_positions = [
 ]
 
 strawberry_rects = [strawberry.get_rect(topleft=pos) for pos in strawberry_positions]
+
+door = pygame.transform.scale(door, (60, 80))
+door_rect = door.get_rect(topleft=(660, 35))
 
 #size of player
 player = pygame.transform.scale(player, (50, 60))
@@ -150,6 +154,8 @@ while True:
       display.blit(ground, (290, 300))  # 5
       display.blit(ground, (550, 100))  #door platform (6)
 
+      display.blit(door, door_rect)
+      
       #strawberry positions
       for rect in strawberry_rects:
          display.blit(strawberry, rect)
