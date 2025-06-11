@@ -1,13 +1,48 @@
 import pygame
+from sys import exit
+
+#score
+def display_score(collected):
+    current_time = int(pygame.time.get_ticks() / 1000) - start_time
+    #display time and strawberries collected
+    score_text = (f'Time: {current_time}  Score: {collected}')
+    score = font.render(score_text, False, 'pink')
+    score_rect = score.get_rect(center=(400, 50))
+    display.blit(score, score_rect)
+    return current_time
+
+#collisions with strawberries
+def strawberry_collision(player_rect, strawberry_rects):
+  collected = 0
+  for rect in strawberry_rects[:]:  # loop over a copy to allow removal
+      if player_rect.colliderect(rect):
+          strawberry_rects.remove(rect)
+          collected += 1
+  return collected
+
 
 #general setup
 pygame.init()
 
-pygame.display.set_caption('Strawberry Patch')
 display = pygame.display.set_mode((800, 700))
+pygame.display.set_caption('Strawberry Patch')
 
 #clock
 clock = pygame.time.Clock()
+
+#score
+font = pygame.font.Font('Font/Pixelfont.ttf', 50)
+#score = font.render('Score: ', False, (64,64,64))
+#score_rect = score.get_rect(bottomright=(400, 50))
+
+#game variables
+game_active = False
+start_time = 0
+start_score = 0
+strawberries_collected = 0
+player_gravity = 0
+player_speed = 5
+on_ground = False
 
 #import images
 bg = pygame.image.load('Images/Background.jpeg').convert_alpha()
@@ -15,65 +50,164 @@ ground = pygame.image.load('Images/ground.png').convert_alpha()
 player = pygame.image.load('Images/Player.png').convert_alpha()
 strawberry = pygame.image.load('Images/Strawberry.png').convert_alpha()
 
+#create a rectangle around the ground
+ground_rects = [
+    ground.get_rect(topleft=(30, 600)),
+    ground.get_rect(topleft=(290, 520)),
+    ground.get_rect(topleft=(550, 600)),
+    ground.get_rect(topleft=(30, 200)),
+    ground.get_rect(topleft=(290, 300)),
+    ground.get_rect(topleft=(550, 100))
+]
+
+# Moving platform #3 (index 2 in ground_rects (550, 600))
+moving_platform_y = 600
+moving_platform_direction = -1  # -1 = up, 1 = down
+moving_platform_speed = 2
+moving_platform_min = 300  # Highest position
+moving_platform_max = 600  # Lowest position
+
+#moving platform #4 (index 3 in ground_rects (30, 200))
+moving_platform_x = 30
+moving_platform_direction_x = 1  # -1 = left, 1 = right
+moving_platform_speed_x = 2
+moving_platform_min_x = 30  # Leftmost position
+moving_platform_max_x = 300  # Rightmost position
+
 #size of strawberry
 strawberry = pygame.transform.scale(strawberry, (35, 35))
+#strawberries positions
+strawberry_positions = [
+    (345, 480), (400, 480), (635, 560), (635, 440), (635, 320),
+    (110, 160), (110, 50), (240, 160), (370, 160), (600, 60)
+]
+
+strawberry_rects = [strawberry.get_rect(topleft=pos) for pos in strawberry_positions]
 
 #size of player
 player = pygame.transform.scale(player, (50, 60))
 #create a rectangle around the player
-player_rect = player.get_rect(midbottom = (400, 350))
+player_rect = player.get_rect(midbottom=(100, 600))
+#homescreen player
+player_homescreen = pygame.transform.scale(player, (200, 220))
+player_homescreen_rect = player_homescreen.get_rect(midbottom=(400, 400))
 
-player_gravity = 0
+game_name = font.render('Strawberry Patch', False, 'palevioletred4')
+game_name_rect = game_name.get_rect(center=(400, 80))
+
+game_message = font.render('Press space to run', False, 'palevioletred4')
+game_message_rect = game_message.get_rect(center=(400, 500))
 
 while True:
-#event loop
+   #event loop
    for event in pygame.event.get():
       #closing the game
       if event.type == pygame.QUIT:
          pygame.quit()
          exit()
-      #keyboard input
-      #if event.type == pygame.KEYDOWN:
+         
+      if game_active:
+         #keyboard input
          #player can only jump if on ground
-         if event.key == pygame.K_SPACE and player_rect.bottom >= ground.top: 
-            player_gravity = -20
+         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE and on_ground:
+                 player_gravity = -10
+
+      else:
+         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            game_active = True
+            player_rect.midbottom = (50, 560)
+            start_time = int(pygame.time.get_ticks() / 1000)
+            strawberries_collected = 0
+            strawberry_rects = [strawberry.get_rect(topleft=pos) for pos in strawberry_positions]
+            
       
+   if game_active:
       #Display
       #update surface color
       display.fill('pink')
       #draw the background
-      display.blit(bg, (0,0))
+      display.blit(bg, (0, 0))
+
+      # Move platform up/down
+      moving_platform_y += moving_platform_direction * moving_platform_speed
+      # Move platform left/right
+      moving_platform_x += moving_platform_direction_x * moving_platform_speed_x
+      # Reverse direction at bounds
+      if moving_platform_y <= moving_platform_min or moving_platform_y >= moving_platform_max:
+          moving_platform_direction *= -1
+      if moving_platform_x <= moving_platform_min_x or moving_platform_x >= moving_platform_max_x:
+          moving_platform_direction_x *= -1
+      # Update the rect
+      ground_rects[2].y = moving_platform_y
+      ground_rects[3].x = moving_platform_x
       
       #ground platform positions
-      display.blit(ground, (30, 600)) #starting platform (1)
-      display.blit(ground, (290, 520)) # 2
-      display.blit(ground, (550, 600)) #moving platform up down (3)
-      display.blit(ground, (30, 200)) #moving platform left right (4)
-      display.blit(ground, (290, 300)) # 5
-      display.blit(ground, (550, 100)) #door platform (6)
+      display.blit(ground, (30, 600))  #starting platform (1)
+      display.blit(ground, (290, 520))  # 2
+      display.blit(ground, ground_rects[2])  #moving platform up down (3)
+      display.blit(ground, ground_rects[3])  #moving platform left right (4)
+      display.blit(ground, (290, 300))  # 5
+      display.blit(ground, (550, 100))  #door platform (6)
 
       #strawberry positions
-      display.blit(strawberry, (345, 480)) # 2
-      display.blit(strawberry, (400, 480)) # 2
-      display.blit(strawberry, (635, 560)) # 3
-      display.blit(strawberry, (635, 440)) # 3
-      display.blit(strawberry, (635, 320)) # 3
-      display.blit(strawberry, (110, 160)) #4
-      display.blit(strawberry, (110, 50)) #4
-      display.blit(strawberry, (240, 160)) #4
-      display.blit(strawberry, (370, 160)) #4
-      display.blit(strawberry, (600, 60)) #6
+      for rect in strawberry_rects:
+         display.blit(strawberry, rect)
+
+      #player horizontal movement
+      keys = pygame.key.get_pressed()
+      if keys[pygame.K_LEFT]:
+          player_rect.x -= player_speed
+      if keys[pygame.K_RIGHT]:
+          player_rect.x += player_speed
+
+      # prevent player from going off-screen
+      player_rect.left = max(player_rect.left, 0)
+      player_rect.right = min(player_rect.right, 800)
       
       #increase gravity
       player_gravity += 1
       player_rect.y += player_gravity
-      #position of player
+
+      # update on_ground after applying gravity
+      on_ground = False
+      for ground_rect in ground_rects:
+          if player_rect.colliderect(ground_rect) and player_gravity >= 0:
+              player_rect.bottom = ground_rect.top
+              player_gravity = 0
+              on_ground = True
+              break
+      
+      #if player falls off screen
+      if player_rect.top >= 700:
+         #player_rect.bottom = 560
+         game_active = False
+         
+      #display images
       display.blit(player, (player_rect))
 
-      #player keyboard input
-      keys = pygame.key.get_pressed()
-      if keys[pygame.K_SPACE]:
-         player_gravity = -20
+      #strawberry collision
+      strawberries_collected += strawberry_collision(player_rect, strawberry_rects)
       
-      pygame.display.update()
-      clock.tick(120)
+      #display score
+      start_score = display_score(strawberries_collected)
+
+   else:
+      #Homescreen, if game is not active
+      display.fill('pink')
+      display.blit(player_homescreen, player_homescreen_rect)
+      display.blit(game_name, game_name_rect)
+
+      #display score
+      score_message = font.render(f'Your score: {start_score}', 
+                                  False, 'palevioletred4')
+      score_message_rect = score_message.get_rect(center=(400, 650))
+
+      #display game message
+      if start_score == 0:
+         display.blit(game_message, game_message_rect)
+      else:
+         display.blit(score_message, score_message_rect)
+
+   pygame.display.update()
+   clock.tick(60)
