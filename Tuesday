@@ -19,7 +19,7 @@ pygame.display.set_caption('Strawberry Patch')
 clock = pygame.time.Clock()
 
 #score
-font = pygame.font.Font('font/Pixelfont.ttf', 50)
+font = pygame.font.Font('Font/Pixelfont.ttf', 50)
 #score = font.render('Score: ', False, (64,64,64))
 #score_rect = score.get_rect(bottomright=(400, 50))
 
@@ -88,10 +88,18 @@ while True:
          #keyboard input
          #if event.type == pygame.KEYDOWN:
          #player can only jump if on ground
+         #if event.type == pygame.KEYDOWN:
+            #if (event.key == pygame.K_SPACE 
+                #and any(player_rect.colliderect(ground) for ground in ground_rects)):
+               #player_gravity = -20
+            #can_jump = any(player_rect.colliderect(ground) for ground in ground_rects)
+            #if event.key == pygame.K_SPACE and can_jump:
+                #player_gravity = -20
          if event.type == pygame.KEYDOWN:
-            if (event.key == pygame.K_SPACE and any(player_rect.bottom >= ground.top
-                                                 for ground in ground_rects)):
+            if (event.key == pygame.K_SPACE 
+                and any(player_rect.colliderect(ground_rect) for ground_rect in ground_rects)):
                player_gravity = -20
+
       else:
          if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             game_active = True
@@ -126,8 +134,16 @@ while True:
             #player_rect.bottom = 560
             game_active = False
          #player collision with ground
-         if player_rect.bottom >= ground.top for ground in ground_rects:
-            player_rect.bottom = ground.top for ground in ground_rects
+         #for ground in ground_rects:
+             #if player_rect.colliderect(ground) and player_gravity > 0:
+                 #player_rect.bottom = ground.top
+                 #player_gravity = 0
+                 #break
+         for ground_rect in ground_rects:
+             if player_rect.colliderect(ground_rect) and player_gravity > 0:
+                 player_rect.bottom = ground_rect.top
+                 player_gravity = 0
+                 break
          #display images
          display.blit(player, (player_rect))
          
@@ -142,9 +158,13 @@ while True:
          #if keys[pygame.K_SPACE]:
          #player_gravity = -20
    
-         for strawberry in strawberry_rects:
-            if player_rect.colliderect(strawberry):
-               print("Player collected a strawberry!")
+         #for strawberry in strawberry_rects:
+            #if player_rect.colliderect(strawberry):
+               #print("Player collected a strawberry!")
+         for strawberry_rect in strawberry_rects:
+             if player_rect.colliderect(strawberry_rect):
+                 print("Player collected a strawberry!")
+
       else:
          #Homescreen, if game is not active
          display.fill('pink')
