@@ -43,6 +43,7 @@ strawberries_collected = 0
 player_gravity = 0
 player_speed = 5
 on_ground = False
+game_win = False
 
 #import images
 bg = pygame.image.load('Images/Background.jpeg').convert_alpha()
@@ -133,6 +134,9 @@ while True:
       #draw the background
       display.blit(bg, (0, 0))
 
+      # display door
+      display.blit(door, door_rect)
+
       # Move platform up/down
       moving_platform_y += moving_platform_direction * moving_platform_speed
       # Move platform left/right
@@ -153,8 +157,6 @@ while True:
       display.blit(ground, ground_rects[3])  #moving platform left right (4)
       display.blit(ground, (290, 300))  # 5
       display.blit(ground, (550, 100))  #door platform (6)
-
-      display.blit(door, door_rect)
       
       #strawberry positions
       for rect in strawberry_rects:
@@ -194,6 +196,10 @@ while True:
 
       #strawberry collision
       strawberries_collected += strawberry_collision(player_rect, strawberry_rects)
+
+      if player_rect.colliderect(door_rect) and strawberries_collected == 10:
+          game_active = False
+          game_won = True
       
       #display score
       start_score = display_score(strawberries_collected)
@@ -205,15 +211,22 @@ while True:
       display.blit(game_name, game_name_rect)
 
       #display score
-      score_message = font.render(f'Your score: {start_score}', 
+      score_message = font.render(f'Time: {start_score}   Score: {strawberries_collected}', 
                                   False, 'palevioletred4')
       score_message_rect = score_message.get_rect(center=(400, 650))
 
-      #display game message
-      if start_score == 0:
-         display.blit(game_message, game_message_rect)
+      #display win message
+      if game_win:
+          win_message = font.render('You Win!', False, 'palevioletred4')
+          win_message_rect = win_message.get_rect(center=(400, 500))
+          display.blit(win_message, win_message_rect)
+          display.blit(score_message, score_message_rect)
       else:
-         display.blit(score_message, score_message_rect)
+          #display start message
+          if start_score == 0:
+              display.blit(game_message, game_message_rect)
+          else:
+              display.blit(score_message, score_message_rect)
 
    pygame.display.update()
    clock.tick(60)
