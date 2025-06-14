@@ -51,6 +51,7 @@ ground = pygame.image.load('Images/ground.png').convert_alpha()
 player = pygame.image.load('Images/Player.png').convert_alpha()
 strawberry = pygame.image.load('Images/Strawberry.png').convert_alpha()
 door = pygame.image.load('Images/door.png').convert_alpha()
+bunny = pygame.image.load('Images/Bunny.png').convert_alpha()
 
 #create a rectangle around the ground
 ground_rects = [
@@ -89,6 +90,15 @@ strawberry_rects = [strawberry.get_rect(topleft=pos) for pos in strawberry_posit
 door = pygame.transform.scale(door, (60, 80))
 door_rect = door.get_rect(topleft=(660, 35))
 
+bunny = pygame.transform.scale(bunny, (50, 50))
+#bunny positions
+bunny_positions = [
+    (300, 470),  # on platform at (290, 520)
+    (580, 570),  # on moving platform at (550, 600)
+    (30, 150)    # on platform at (30, 200)
+]
+bunny_rects = [bunny.get_rect(topleft=pos) for pos in bunny_positions]
+
 #size of player
 player = pygame.transform.scale(player, (50, 60))
 #create a rectangle around the player
@@ -121,6 +131,7 @@ while True:
       else:
          if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             game_active = True
+            game_won = False  #Reset win
             player_rect.midbottom = (50, 560)
             start_time = int(pygame.time.get_ticks() / 1000)
             strawberries_collected = 0
@@ -158,10 +169,14 @@ while True:
       display.blit(ground, (290, 300))  # 5
       display.blit(ground, (550, 100))  #door platform (6)
       
-      #strawberry positions
+      #display strawberries
       for rect in strawberry_rects:
          display.blit(strawberry, rect)
 
+      #display bunnies
+      for bunny_rect in bunny_rects:
+          display.blit(bunny, bunny_rect)
+         
       #player horizontal movement
       keys = pygame.key.get_pressed()
       if keys[pygame.K_LEFT]:
@@ -199,10 +214,18 @@ while True:
 
       if player_rect.colliderect(door_rect) and strawberries_collected == 10:
           game_active = False
-          game_won = True
+          game_win = True
       
       #display score
       start_score = display_score(strawberries_collected)
+
+      #bunny collision
+      for bunny_rect in bunny_rects:
+          if player_rect.colliderect(bunny_rect):
+              game_active = False
+              game_win = False  
+              break
+   
 
    else:
       #Homescreen, if game is not active
@@ -220,6 +243,12 @@ while True:
           win_message = font.render('You Win!', False, 'palevioletred4')
           win_message_rect = win_message.get_rect(center=(400, 500))
           display.blit(win_message, win_message_rect)
+          display.blit(score_message, score_message_rect)
+      #display lose message if player gets caught by bunny
+      elif strawberries_collected <= 10 and player_rect.top < 700:
+          lose_message = font.render('You got caught! Press space to try again.', False, 'palevioletred4')
+          lose_message_rect = lose_message.get_rect(center=(400, 500))
+          display.blit(lose_message, lose_message_rect)
           display.blit(score_message, score_message_rect)
       else:
           #display start message
