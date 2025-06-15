@@ -63,26 +63,26 @@ ground_rects = [
     ground.get_rect(topleft=(550, 100))
 ]
 
-# Moving platform #3 (index 2 in ground_rects (550, 600))
+# Moving platform #3 (index 2 in ground_rects)
 moving_platform_y = 600
 moving_platform_direction = -1  # -1 = up, 1 = down
 moving_platform_speed = 2
-moving_platform_min = 300  # Highest position
-moving_platform_max = 600  # Lowest position
+moving_platform_min = 300 #min position (top of screen)
+moving_platform_max = 600 #max position (bottom of screen)
 
-#moving platform #4 (index 3 in ground_rects (30, 200))
+#moving platform #4 (index 3 in ground_rects)
 moving_platform_x = 30
 moving_platform_direction_x = 1  # -1 = left, 1 = right
 moving_platform_speed_x = 2
-moving_platform_min_x = 30  # Leftmost position
-moving_platform_max_x = 300  # Rightmost position
+moving_platform_min_x = 30 
+moving_platform_max_x = 300  
 
 #size of strawberry
 strawberry = pygame.transform.scale(strawberry, (35, 35))
 #strawberries positions
 strawberry_positions = [
     (345, 480), (400, 480), (635, 560), (635, 440), (635, 320),
-    (110, 160), (110, 50), (240, 160), (370, 160), (600, 60)
+    (110, 160), (110, 70), (240, 160), (370, 160), (600, 60)
 ]
 
 strawberry_rects = [strawberry.get_rect(topleft=pos) for pos in strawberry_positions]
@@ -90,14 +90,34 @@ strawberry_rects = [strawberry.get_rect(topleft=pos) for pos in strawberry_posit
 door = pygame.transform.scale(door, (60, 80))
 door_rect = door.get_rect(topleft=(660, 35))
 
-bunny = pygame.transform.scale(bunny, (30, 30))
-#bunny positions
-bunny_positions = [
-    (300, 490),  # on platform at (290, 520)
-    (580, 590),  # on moving platform at (550, 600)
-    (30, 170)    # on platform at (30, 200)
-]
-bunny_rects = [bunny.get_rect(topleft=pos) for pos in bunny_positions]
+bunny = pygame.transform.scale(bunny, (20, 25))
+
+#moving bunnies
+# Bunny #1 (on platform at 290, 520)
+bunny1_x = 300
+bunny1_direction = 1
+bunny1_speed = 1
+bunny1_min_x = 290
+bunny1_max_x = 430
+bunny1_y = 490
+bunny1_rect = bunny.get_rect(topleft=(bunny1_x, bunny1_y))
+
+# Bunny #2 (on moving platform at 550, moving y)
+bunny2_x = 580
+bunny2_direction = 1
+bunny2_speed = 1
+bunny2_min_x = 550
+bunny2_max_x = 700
+bunny2_rect = bunny.get_rect(topleft=(bunny2_x, moving_platform_y - 30)) 
+
+# Bunny #3 (on platform at 30, 200)
+bunny3_x = 30
+bunny3_direction = 1
+bunny3_speed = 1
+bunny3_min_x = 30
+bunny3_max_x = 230
+bunny3_y = 170
+bunny3_rect = bunny.get_rect(topleft=(bunny3_x, bunny3_y))
 
 #size of player
 player = pygame.transform.scale(player, (50, 60))
@@ -169,13 +189,33 @@ while True:
       display.blit(ground, (290, 300))  # 5
       display.blit(ground, (550, 100))  #door platform (6)
 
+      #bunny 1 movement
+      bunny1_x += bunny1_direction * bunny1_speed
+      if bunny1_x <= bunny1_min_x or bunny1_x >= bunny1_max_x:
+          bunny1_direction *= -1
+      bunny1_rect.topleft = (bunny1_x, bunny1_y)
+
+      #bunny 2 movement (moving platform)
+      bunny2_x += bunny2_direction * bunny2_speed
+      if bunny2_x <= bunny2_min_x or bunny2_x >= bunny2_max_x:
+          bunny2_direction *= -1
+      bunny2_rect.topleft = (bunny2_x, moving_platform_y - 30)  # Keep on moving platform
+
+      #bunny 3 movement
+      bunny3_x += bunny3_direction * bunny3_speed
+      if bunny3_x <= bunny3_min_x or bunny3_x >= bunny3_max_x:
+          bunny3_direction *= -1
+      bunny3_rect.topleft = (bunny3_x, bunny3_y)
+
+      
       #display strawberries
       for rect in strawberry_rects:
          display.blit(strawberry, rect)
 
-      #display bunnies
-      for bunny_rect in bunny_rects:
-          display.blit(bunny, bunny_rect)
+      # display moving bunnies
+      display.blit(bunny, bunny1_rect)
+      display.blit(bunny, bunny2_rect)
+      display.blit(bunny, bunny3_rect)
 
       #player horizontal movement
       keys = pygame.key.get_pressed()
@@ -189,7 +229,7 @@ while True:
       player_rect.right = min(player_rect.right, 800)
 
       #increase gravity
-      player_gravity += 1
+      player_gravity += 0.7
       player_rect.y += player_gravity
 
       # update on_ground after applying gravity
@@ -220,12 +260,11 @@ while True:
       start_score = display_score(strawberries_collected)
 
       #bunny collision
-      for bunny_rect in bunny_rects:
-          if player_rect.colliderect(bunny_rect):
-              game_active = False
-              game_win = False  
-              break
-
+      if (player_rect.colliderect(bunny1_rect) or 
+         player_rect.colliderect(bunny2_rect) or 
+         player_rect.colliderect(bunny3_rect)):
+         game_active = False
+         game_win = False
 
    else:
       #Homescreen, if game is not active
