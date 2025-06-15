@@ -44,6 +44,7 @@ player_gravity = 0
 player_speed = 5
 on_ground = False
 game_win = False
+game_lost = False
 
 #import images
 bg = pygame.image.load('Images/Background.jpeg').convert_alpha()
@@ -151,7 +152,8 @@ while True:
       else:
          if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             game_active = True
-            game_won = False  #Reset win
+            game_won = False  #reset
+            game_lost = False #reset
             player_rect.midbottom = (50, 560)
             start_time = int(pygame.time.get_ticks() / 1000)
             strawberries_collected = 0
@@ -245,6 +247,7 @@ while True:
       if player_rect.top >= 700:
          #player_rect.bottom = 560
          game_active = False
+         game_lost = True
 
       #display images
       display.blit(player, (player_rect))
@@ -265,6 +268,7 @@ while True:
          player_rect.colliderect(bunny3_rect)):
          game_active = False
          game_win = False
+         game_lost = True
 
    else:
       #Homescreen, if game is not active
@@ -284,7 +288,7 @@ while True:
           display.blit(win_message, win_message_rect)
           display.blit(score_message, score_message_rect)
       #display lose message if player gets caught by bunny
-      elif strawberries_collected <= 10 and player_rect.top < 700:
+      elif game_lost:
           lose_message = font.render('You got caught! Press space to try again.', False, 'palevioletred4')
           lose_message_rect = lose_message.get_rect(center=(400, 500))
           display.blit(lose_message, lose_message_rect)
