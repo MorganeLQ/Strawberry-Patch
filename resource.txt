@@ -34,3 +34,12 @@ Link: https://docs.replit.com/
 #AI Tool Used  
 Tool Name: ChatGPT (OpenAI)  
 Link: https://chat.openai.com/  
+
+#Youtube video tutorials
+Youtube Name: Clear Code
+Video Name: The ultimate introduction to Pygame
+Link: https://www.youtube.com/watch?v=AY9MnQ4x3zk&t=10038s
+
+Youtube Name: Clear Code
+Video Name: Master Python by making 5 games [the new ultimate introduction to pygame]
+Link: https://www.youtube.com/watch?v=8OMghdHP-zs&t=13662s
