@@ -1,0 +1,36 @@
+#Resource File for Strawberry Patch Game
+#Prompts Asked on ChatGPT
+
+Prompt: Why does my game stop running after I press run and shows a black screen for a few seconds?
+Response Summary: Chat GPT explained this may occur because of a typo when importing images.
+Code change: I made an error when importing the font.
+
+Prompt: Why does my bunny not move with the platform underneath it?
+Response Summary: Explained how to update the bunny’s `y` position and provided working movement code using rect updates inside the game loop.
+Code change: bunny2_rect.topleft = (bunny2_x, moving_platform_y - 30)  # Keep on moving platform
+
+Prompt: Why does it say "You got caught!" on the homescreen when I first start to play instead of "Press space to play"?
+Response Summary: Found a logic error in the conditions for loosing when falling or when colliding with a bunny and suggested resetting state variables properly before the game starts.
+Code change: created a new variable game_lost
+
+Prompt: How can I make moving platforms in pygame?
+Response Summary: Explained that using different variables including the platform speed and direction, multiplying them and updating the display will make them move in their bounds.
+Code change: 
+moving_platform_y += moving_platform_direction * moving_platform_speed
+if moving_platform_y <= moving_platform_min or moving_platform_y >= moving_platform_max:
+moving_platform_direction *= -1
+
+
+# External Resources Used
+
+#Pygame Documentation  
+Title: Pygame Docs  
+Link: https://www.pygame.org/docs/
+
+#Replit Documentation  
+Title: Replit: Managing Files and Dependencies  
+Link: https://docs.replit.com/
+
+#AI Tool Used  
+Tool Name: ChatGPT (OpenAI)  
+Link: https://chat.openai.com/  
